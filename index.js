@@ -67,5 +67,5 @@ const checkForUpdates = async () => {
 //! comment the line below if running locally
 await checkForUpdates();
 
-// Run every hour
-// setInterval(checkForUpdates, 60 * 60 * 1000); //! comment this line for remote execution
+// Run every minute
+// setInterval(checkForUpdates, 60 * 1000); //! comment this line for remote execution
