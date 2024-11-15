@@ -6,5 +6,5 @@ export const formatDate = date => {
     .toLocaleTimeString('en-US', { hour12: false })
     .replace(/:/g, ':');
 
-  return `${datePart} [${timePart}]:`;
+  return `[${datePart} ${timePart}]:`;
 };

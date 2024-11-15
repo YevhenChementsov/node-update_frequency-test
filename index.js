@@ -26,31 +26,35 @@ const checkForUpdates = async () => {
         return;
       case 200:
         const data = await response.json();
-        const etag = response.headers.get('ETag');
-        const modified = response.headers.get('Last-Modified');
-        const contentHash = getHash(JSON.stringify(data, null, 2));
+        const dataToString = JSON.stringify(data, null, 2);
+        const headers = {
+          etag: response.headers.get('ETag'),
+          modified: response.headers.get('Last-Modified'),
+        };
+        const contentHash = getHash(dataToString);
+        const changes = {
+          etagChanged: headers.etag !== lastETag,
+          modifiedChanged: headers.modified !== lastModified,
+          contentChanged: contentHash !== lastContentHash,
+        };
 
-        switch (true) {
-          case etag !== lastETag:
-            lastETag = etag;
-            logUpdateMessage('Change detected: ETag has changed.');
-            break;
-          case modified !== lastModified:
-            lastModified = modified;
-            logUpdateMessage(
-              'Change detected: Last-Modified header has changed.',
-            );
-            break;
-          case contentHash !== lastContentHash:
-            lastContentHash = contentHash;
-            logUpdateMessage('Change detected: Content hash has changed.');
-            break;
-          default:
-            logUpdateMessage('No change detected.');
-            return;
+        if (changes.etagChanged) {
+          lastETag = headers.etag;
+          logUpdateMessage('Change detected: ETag has changed.');
+        } else if (changes.modifiedChanged) {
+          lastModified = headers.modified;
+          logUpdateMessage(
+            'Change detected: Last-Modified header has changed.',
+          );
+        } else if (changes.contentChanged) {
+          lastContentHash = contentHash;
+          logUpdateMessage('Change detected: Content hash has changed.');
+        } else {
+          logUpdateMessage('No change detected.');
+          return;
         }
 
-        await fs.writeFile(dbFilePath, JSON.stringify(data, null, 2));
+        await fs.writeFile(dbFilePath, dataToString);
         logUpdateMessage('Update found and saved.');
         break;
       default:
@@ -63,4 +67,6 @@ const checkForUpdates = async () => {
   }
 };
 
-setInterval(checkForUpdates, 60 * 1000);
+await checkForUpdates(); //! commit this line if you run it locally
+// Run every hour
+// setInterval(checkForUpdates, 60 * 1000); //! commit this line if you run it remotely
