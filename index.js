@@ -1,48 +1,35 @@
-import { fetchData } from './helpers/fetchData.js';
-import { getFilePath } from './helpers/getFilePath.js';
+import { mkdir } from 'node:fs/promises';
+import {
+  fetchData,
+  getFolderPath,
+  loadPreviousData,
+  writeLogMessage,
+} from './helpers';
+
+const INTERVAL = 60 * 1000; // 1 minute
 
 const monitorFile = async () => {
-  const currentData = await fetchData();
-  if (!currentData) return;
+  try {
+    await mkdir(getFolderPath(downloads), { recursive: true });
+    await mkdir(getFolderPath(logs), { recursive: true });
 
-  const { metadata, data } = currentData;
-  const previousData = await loadPreviousData();
+    const currentData = await fetchData();
+    if (!currentData || !currentData.data) return;
 
-  // compare prev & current data/metadata
-  // save current data/metadata
+    const { metadata, data } = currentData;
+
+    const previousData = loadPreviousData();
+    // compare prev & current data/metadata
+    // save current data/metadata
+  } catch (error) {
+    throw new Error(`File upgrade detection failed. ${error}`);
+  }
 };
 
 const startUpdateDetection = () => {
-  // logMessage('Starting update detection.');
   console.log('Starting update detection.');
-  setInterval(monitorFile, interval);
+  writeLogMessage('Starting update detection.');
+  setInterval(monitorFile, INTERVAL);
 };
 
 startUpdateDetection();
-
-const saveCurrentData = async (metadata, data) => {
-  try {
-    await fs.writeFile(
-      getFilePath('downloads', 'metadata.json'),
-      JSON.stringify(metadata, null, 2),
-    );
-    await fs.writeFile(
-      getFilePath('downloads', 'company_tickers_exchange.json'),
-      data,
-    );
-  } catch {
-    throw new Error('Error writing or updating local files.');
-  }
-};
-
-const loadPreviousData = async () => {
-  try {
-    const [data, metadata] = await Promise.all([
-      fs.readFile(LOCAL_FILE),
-      fs.readFile(METADATA_FILE, 'utf-8').then(JSON.parse),
-    ]);
-    return { data, metadata };
-  } catch {
-    throw new Error('Error loading local files.');
-  }
-};

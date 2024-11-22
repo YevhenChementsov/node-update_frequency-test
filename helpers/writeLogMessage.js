@@ -1,7 +1,7 @@
 import { appendFile } from 'fs/promises';
 
 import { formatDate } from './formatDate.js';
-import { getFilePath } from './getFilePath.js';
+import { getFilePath } from './getPath.js';
 
 export const writeLogMessage = async message => {
   const currentDate = new Date();

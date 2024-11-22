@@ -8,5 +8,9 @@ const __dirname = dirname(__filename);
 // const metadataFilePath = join(__dirname, 'metadata.json');
 // const logsFilePath = join(__dirname, 'update_log.txt');
 
-export const getFilePath = (folder, fileName) =>
+const getFilePath = (folder, fileName) =>
   join(__dirname, '..', `${folder}`, `${fileName}`);
+
+const getFolderPath = folder => join(__dirname, '..', `${folder}`);
+
+export { getFilePath, getFolderPath };
