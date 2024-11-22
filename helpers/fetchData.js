@@ -3,7 +3,7 @@ import { calculateHash } from './calculateHash.js';
 
 const URL = 'https://www.sec.gov/files/company_tickers_exchange.json';
 
-const fetchData = async () => {
+export const fetchData = async () => {
   try {
     console.log('Fetching data...');
     const response = await axios.get(URL, {
@@ -17,12 +17,22 @@ const fetchData = async () => {
     const lastModified = headers['last-modified'];
     const fileSize = Buffer.byteLength(response.data, 'utf-8');
 
-    return { currentHash, fileSize, lastModified, data };
+    const metadata = {
+      hash: currentHash,
+      size: fileSize,
+      lastModified,
+    };
+
+    return { metadata, data };
   } catch (error) {
-    throw new Error(
-      `Error fetching data from ${error.response.config.url}: ${error.response.status} - ${error.response.statusText}.`,
-    );
+    if (error.response) {
+      throw new Error(
+        `Error fetching data from ${error.response.config.url}: ${error.response.status} - ${error.response.statusText}.`,
+      );
+    } else if (error.request) {
+      throw new Error(`Error fetching data. No response received. ${error}`);
+    } else {
+      throw new Error(`Request configuration error: ${error.message}`);
+    }
   }
 };
-
-fetchData();
