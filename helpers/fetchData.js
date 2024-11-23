@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { calculateHash } from './calculateHash.js';
+
+import { calculateHash } from './index.js';
 
 const URL = 'https://www.sec.gov/files/company_tickers_exchange.json';
 

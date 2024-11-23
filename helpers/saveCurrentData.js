@@ -1,16 +1,14 @@
 import { writeFile } from 'node:fs/promises';
 
+import { dataFilePath, metadataFilePath } from './index.js';
+
+const dataObjectToString = obj => JSON.stringify(obj, null, 2);
+
 export const saveCurrentData = async (metadata, data) => {
   try {
-    await writeFile(
-      getFilePath('downloads', 'metadata.json'),
-      JSON.stringify(metadata, null, 2),
-    );
-    await writeFile(
-      getFilePath('downloads', 'company_tickers_exchange.json'),
-      data,
-    );
-  } catch {
-    throw new Error('Error writing or updating local files.');
+    await writeFile(metadataFilePath, dataObjectToString(metadata));
+    await writeFile(dataFilePath, dataObjectToString(data));
+  } catch (error) {
+    console.error(error);
   }
 };

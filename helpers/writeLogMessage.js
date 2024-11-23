@@ -1,13 +1,9 @@
-import { appendFile } from 'fs/promises';
+import { appendFile } from 'node:fs/promises';
 
-import { formatDate } from './formatDate.js';
-import { getFilePath } from './getPath.js';
+import { formatDate, logsFilePath } from './index.js';
 
 export const writeLogMessage = async message => {
   const currentDate = new Date();
   const timestamp = formatDate(currentDate);
-  await appendFile(
-    getFilePath('logs', 'update_logs.txt'),
-    `${timestamp} ${message}\n`,
-  );
+  await appendFile(logsFilePath, `${timestamp} ${message}\n`);
 };

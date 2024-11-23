@@ -4,13 +4,18 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// const localFilePath = join(__dirname, 'company_tickers_exchange.json');
-// const metadataFilePath = join(__dirname, 'metadata.json');
-// const logsFilePath = join(__dirname, 'update_log.txt');
-
-const getFilePath = (folder, fileName) =>
-  join(__dirname, '..', `${folder}`, `${fileName}`);
-
 const getFolderPath = folder => join(__dirname, '..', `${folder}`);
 
-export { getFilePath, getFolderPath };
+const downloadsFolderPath = getFolderPath('downloads');
+const logsFolderPath = getFolderPath('logs');
+const dataFilePath = join(downloadsFolderPath, 'company_tickers_exchange.json');
+const metadataFilePath = join(downloadsFolderPath, 'metadata.json');
+const logsFilePath = join(logsFolderPath, 'update_logs.txt');
+
+export {
+  dataFilePath,
+  downloadsFolderPath,
+  logsFilePath,
+  logsFolderPath,
+  metadataFilePath,
+};
