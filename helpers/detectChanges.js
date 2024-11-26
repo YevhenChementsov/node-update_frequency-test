@@ -1,34 +1,35 @@
-import { writeLogMessage } from './index.js';
+import { messages, writeLogMessage } from './index.js';
+const { changed, noUpdates } = messages;
 
 export const detectChanges = async (previousData, currentData) => {
   const { data: previousContent, metadata: previousMetadata } = previousData;
   const { data: currentContent, metadata: currentMetadata } = currentData;
 
   if (JSON.stringify(previousContent) !== JSON.stringify(currentContent)) {
-    console.log('Content has changed.');
-    await writeLogMessage('Content has changed.');
+    console.log(changed.content);
+    await writeLogMessage(changed.content);
     return true;
   }
 
   if (previousMetadata?.hash !== currentMetadata.hash) {
-    console.log('Hash has changed.');
-    await writeLogMessage('Hash has changed.');
+    console.log(changed.hash);
+    await writeLogMessage(changed.hash);
     return true;
   }
 
   if (previousMetadata?.size !== currentMetadata.size) {
-    console.log('File size has changed.');
-    await writeLogMessage('File size has changed.');
+    console.log(changed.fileSize);
+    await writeLogMessage(changed.fileSize);
     return true;
   }
 
   if (previousMetadata?.lastModified !== currentMetadata.lastModified) {
-    console.log('Last-Modified header has changed.');
-    await writeLogMessage('Last-Modified header has changed.');
+    console.log(changed.lastModified);
+    await writeLogMessage(changed.lastModified);
     return true;
   }
 
-  console.log('No changes detected.');
-  await writeLogMessage('No updates were detected.');
+  console.log(noUpdates);
+  await writeLogMessage(noUpdates);
   return false;
 };

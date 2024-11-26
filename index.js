@@ -1,4 +1,5 @@
 import { mkdir } from 'node:fs/promises';
+
 import {
   checkExistFiles,
   detectChanges,
@@ -7,11 +8,14 @@ import {
   firstDownload,
   loadPreviousData,
   logsFolderPath,
+  messages,
   saveCurrentData,
   writeLogMessage,
 } from './helpers/index.js';
 
-const INTERVAL = 1000 * 60 * 60; // 1 hour
+const { saveData, startMonitor } = messages;
+
+const INTERVAL = 1000 * 60; // 1 minute
 
 const monitorFile = async () => {
   await mkdir(downloadsFolderPath, { recursive: true });
@@ -33,8 +37,8 @@ const monitorFile = async () => {
 
     if (changesDetected) {
       await saveCurrentData(metadata, data);
-      console.log('New data was saved successfully.');
-      await writeLogMessage('New data was saved successfully.');
+      console.log(saveData);
+      await writeLogMessage(saveData);
     }
   } catch (error) {
     console.error(error);
@@ -43,7 +47,7 @@ const monitorFile = async () => {
 
 const startUpdateDetection = () => {
   monitorFile();
-  console.log('Starting update detection...');
+  console.log(startMonitor);
   setInterval(monitorFile, INTERVAL);
 };
 
