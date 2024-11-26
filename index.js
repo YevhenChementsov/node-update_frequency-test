@@ -1,4 +1,5 @@
-import { mkdir } from 'node:fs/promises';
+import http from 'http';
+import { mkdir, readFile } from 'node:fs/promises';
 
 import {
   checkExistFiles,
@@ -7,6 +8,7 @@ import {
   fetchData,
   firstDownload,
   loadPreviousData,
+  logsFilePath,
   logsFolderPath,
   messages,
   saveCurrentData,
@@ -52,3 +54,20 @@ const startUpdateDetection = () => {
 };
 
 startUpdateDetection();
+
+const PORT = process.env.PORT || 3000;
+http
+  .createServer((_, res) => {
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
+
+    readFile(logsFilePath, 'utf8')
+      .then(data => {
+        res.end(data || 'No logs yet.');
+      })
+      .catch(() => {
+        res.end('No logs yet or log file missing.');
+      });
+  })
+  .listen(PORT, () => {
+    console.log(`Server is listening on port ${PORT}`);
+  });
