@@ -15,12 +15,14 @@ export const fetchData = async () => {
     const headers = response.headers;
 
     const currentHash = calculateHash(response.data);
+    const contentLength = headers['content-length'];
     const lastModified = headers['last-modified'];
     const fileSize = Buffer.byteLength(response.data, 'utf-8');
 
     const metadata = {
       hash: currentHash,
       size: fileSize,
+      contentLength: Number(contentLength),
       lastModified,
     };
 

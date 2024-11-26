@@ -3,35 +3,46 @@ import { writeLogMessage } from './index.js';
 
 const { changed, noUpdates } = messages;
 
-export const detectChanges = async (previousData, currentData) => {
-  const { data: previousContent, metadata: previousMetadata } = previousData;
-  const { data: currentContent, metadata: currentMetadata } = currentData;
+export const detectChanges = async (previousMetadata, currentMetadata) => {
+  let changeCount = 0;
 
-  if (JSON.stringify(previousContent) !== JSON.stringify(currentContent)) {
+  if (previousMetadata?.contentLength !== currentMetadata.contentLength) {
     console.log(changed.content);
-    await writeLogMessage(changed.content);
-    return true;
+    changeCount += 1;
+    await writeLogMessage(
+      `${changed.content}\n Was: ${previousMetadata?.contentLength}\n Now: ${currentMetadata.contentLength}.`,
+    );
   }
 
   if (previousMetadata?.hash !== currentMetadata.hash) {
     console.log(changed.hash);
-    await writeLogMessage(changed.hash);
-    return true;
+    changeCount += 1;
+    await writeLogMessage(
+      `${changed.hash}\n Was: ${previousMetadata?.hash}\n Now: ${currentMetadata.hash}.`,
+    );
   }
 
   if (previousMetadata?.size !== currentMetadata.size) {
     console.log(changed.fileSize);
-    await writeLogMessage(changed.fileSize);
-    return true;
+    changeCount += 1;
+    await writeLogMessage(
+      `${changed.fileSize}\n Was: ${previousMetadata?.size}\n Now: ${currentMetadata.size}.`,
+    );
   }
 
   if (previousMetadata?.lastModified !== currentMetadata.lastModified) {
     console.log(changed.lastModified);
-    await writeLogMessage(changed.lastModified);
-    return true;
+    changeCount += 1;
+    await writeLogMessage(
+      `${changed.lastModified}\n Was: ${previousMetadata?.lastModified}\n Now: ${currentMetadata.lastModified}.`,
+    );
   }
 
-  console.log(noUpdates);
-  await writeLogMessage(noUpdates);
-  return false;
+  if (changeCount > 0) {
+    return true;
+  } else {
+    console.log(noUpdates);
+    await writeLogMessage(noUpdates);
+    return false;
+  }
 };

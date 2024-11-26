@@ -1,18 +1,11 @@
 import { readFile } from 'node:fs/promises';
 
-import { dataFilePath, metadataFilePath } from './index.js';
-
-const readFileAndParse = async path =>
-  await readFile(path, 'utf-8').then(JSON.parse);
+import { metadataFilePath } from './index.js';
 
 export const loadPreviousData = async () => {
   try {
-    const [data, metadata] = await Promise.all([
-      readFileAndParse(dataFilePath),
-      readFileAndParse(metadataFilePath),
-    ]);
-
-    return { data, metadata };
+    const metadata = await readFile(metadataFilePath, 'utf-8').then(JSON.parse);
+    return metadata;
   } catch (error) {
     console.error(error);
   }

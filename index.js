@@ -17,7 +17,8 @@ import {
 
 const { saveData, startMonitor } = messages;
 
-const INTERVAL = 1000 * 60; // 1 minute
+//! Change interval below
+const INTERVAL = 1000 * 60 * 30; // 30 minute
 
 const monitorFile = async () => {
   await mkdir(downloadsFolderPath, { recursive: true });
@@ -33,9 +34,9 @@ const monitorFile = async () => {
       return await firstDownload(metadata, data);
     }
 
-    const previousData = await loadPreviousData();
+    const previousMetadata = await loadPreviousData();
 
-    const changesDetected = await detectChanges(previousData, currentData);
+    const changesDetected = await detectChanges(previousMetadata, metadata);
 
     if (changesDetected) {
       await saveCurrentData(metadata, data);
@@ -56,6 +57,7 @@ const startUpdateDetection = () => {
 startUpdateDetection();
 
 const PORT = process.env.PORT || 3000;
+
 http
   .createServer((_, res) => {
     res.writeHead(200, { 'Content-Type': 'text/plain' });
