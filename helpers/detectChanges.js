@@ -1,4 +1,6 @@
-import { messages, writeLogMessage } from './index.js';
+import { messages } from './getMessage.js';
+import { writeLogMessage } from './index.js';
+
 const { changed, noUpdates } = messages;
 
 export const detectChanges = async (previousData, currentData) => {

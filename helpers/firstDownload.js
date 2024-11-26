@@ -1,6 +1,6 @@
+import { messages } from './getMessage.js';
 import { saveCurrentData, writeLogMessage } from './index.js';
 
-import { messages } from './index.js';
 const { noLocalData, startMonitor, saveData } = messages;
 
 export const firstDownload = async (metadata, data) => {
