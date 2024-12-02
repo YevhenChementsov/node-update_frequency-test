@@ -4,41 +4,30 @@ import { writeLogMessage } from './index.js';
 const { changed, noUpdates } = messages;
 
 export const detectChanges = async (previousMetadata, currentMetadata) => {
-  let changeCount = 0;
+  const changes = [];
 
   if (previousMetadata?.contentLength !== currentMetadata.contentLength) {
     console.log(changed.content);
-    changeCount += 1;
-    await writeLogMessage(
-      `${changed.content}\n Was: ${previousMetadata?.contentLength}\n Now: ${currentMetadata.contentLength}.`,
-    );
+    changes.push(changed.content);
   }
 
   if (previousMetadata?.hash !== currentMetadata.hash) {
     console.log(changed.hash);
-    changeCount += 1;
-    await writeLogMessage(
-      `${changed.hash}\n Was: ${previousMetadata?.hash}\n Now: ${currentMetadata.hash}.`,
-    );
+    changes.push(changed.hash);
   }
 
   if (previousMetadata?.size !== currentMetadata.size) {
     console.log(changed.fileSize);
-    changeCount += 1;
-    await writeLogMessage(
-      `${changed.fileSize}\n Was: ${previousMetadata?.size}\n Now: ${currentMetadata.size}.`,
-    );
+    changes.push(changed.fileSize);
   }
 
   if (previousMetadata?.lastModified !== currentMetadata.lastModified) {
     console.log(changed.lastModified);
-    changeCount += 1;
-    await writeLogMessage(
-      `${changed.lastModified}\n Was: ${previousMetadata?.lastModified}\n Now: ${currentMetadata.lastModified}.`,
-    );
+    changes.push(changed.lastModified);
   }
 
-  if (changeCount > 0) {
+  if (changes.length > 0) {
+    await writeLogMessage(`Update detected: ${changes.join(', ')}.`);
     return true;
   } else {
     console.log(noUpdates);
