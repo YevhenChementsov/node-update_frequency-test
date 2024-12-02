@@ -1,12 +1,11 @@
-import { readFile } from 'node:fs/promises';
-
-import { metadataFilePath } from './index.js';
+import { Metadata } from '../models/metadata.js';
 
 export const loadPreviousData = async () => {
   try {
-    const metadata = await readFile(metadataFilePath, 'utf-8').then(JSON.parse);
-    return metadata;
+    const latestMetadata = await Metadata.findOne();
+    return latestMetadata || null;
   } catch (error) {
-    console.error(error);
+    console.error('Error loading metadata from MongoDB:', error);
+    return null;
   }
 };

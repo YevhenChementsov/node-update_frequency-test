@@ -1,14 +1,14 @@
 import { writeFile } from 'node:fs/promises';
 
-import { dataFilePath, metadataFilePath } from './index.js';
-
-const dataObjectToString = obj => JSON.stringify(obj, null, 2);
+import { Metadata } from '../models/metadata.js';
+import { dataFilePath } from './index.js';
 
 export const saveCurrentData = async (metadata, data) => {
   try {
-    await writeFile(metadataFilePath, dataObjectToString(metadata));
-    await writeFile(dataFilePath, dataObjectToString(data));
+    await Metadata.findOneAndUpdate({}, metadata, { upsert: true, new: true });
+    console.log('Metadata saved to MongoDB:', metadata);
+    await writeFile(dataFilePath, JSON.stringify(data));
   } catch (error) {
-    console.error(error);
+    console.error('Error saving metadata to MongoDB:', error);
   }
 };

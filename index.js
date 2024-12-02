@@ -1,15 +1,17 @@
+import 'dotenv/config';
 import http from 'http';
-import { mkdir, readFile } from 'node:fs/promises';
+import { mkdir } from 'node:fs/promises';
+
+import { connectToDB } from './db.js';
+import { Log, Metadata } from './models/index.js';
 
 import {
-  checkExistFiles,
   detectChanges,
   downloadsFolderPath,
   fetchData,
   firstDownload,
+  formatDate,
   loadPreviousData,
-  logsFilePath,
-  logsFolderPath,
   messages,
   saveCurrentData,
   writeLogMessage,
@@ -18,19 +20,19 @@ import {
 const { saveData, startMonitor } = messages;
 
 //! Change interval below
-const INTERVAL = 1000 * 60 * 30; // 30 minute
+const INTERVAL = 1000 * 60 * 60; // 1 hour
 
 const monitorFile = async () => {
   await mkdir(downloadsFolderPath, { recursive: true });
-  await mkdir(logsFolderPath, { recursive: true });
 
   try {
+    const existingMetadata = await Metadata.findOne();
+
     const currentData = await fetchData();
     if (!currentData || !currentData.data) return;
-
     const { metadata, data } = currentData;
 
-    if (checkExistFiles()) {
+    if (!existingMetadata) {
       return await firstDownload(metadata, data);
     }
 
@@ -48,7 +50,8 @@ const monitorFile = async () => {
   }
 };
 
-const startUpdateDetection = () => {
+const startUpdateDetection = async () => {
+  await connectToDB();
   monitorFile();
   console.log(startMonitor);
   setInterval(monitorFile, INTERVAL);
@@ -56,19 +59,24 @@ const startUpdateDetection = () => {
 
 startUpdateDetection();
 
-const PORT = process.env.PORT || 3000;
+const { PORT = 3000 } = process.env;
 
 http
-  .createServer((_, res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
+  .createServer(async (_, res) => {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
 
-    readFile(logsFilePath, 'utf8')
-      .then(data => {
-        res.end(data || 'No logs yet.');
-      })
-      .catch(() => {
-        res.end('No logs yet or log file missing.');
-      });
+    try {
+      const logs = await Log.find();
+      const formattedLogs = logs
+        .map(
+          ({ timestamp, message }) => `${formatDate(timestamp)} ${message}\n`,
+        )
+        .join('\n');
+      res.end(formattedLogs);
+    } catch (error) {
+      console.error('Error fetching logs from MongoDB:', error);
+      res.end(JSON.stringify({ error: 'Failed to fetch logs.' }));
+    }
   })
   .listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);

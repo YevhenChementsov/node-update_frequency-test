@@ -1,5 +1,4 @@
 export * from './calculateHash.js';
-export * from './checkExistFiles.js';
 export * from './detectChanges.js';
 export * from './fetchData.js';
 export * from './firstDownload.js';

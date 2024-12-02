@@ -1,9 +1,11 @@
-import { appendFile } from 'node:fs/promises';
-
-import { formatDate, logsFilePath } from './index.js';
+import { Log } from '../models/log.js';
 
 export const writeLogMessage = async message => {
-  const currentDate = new Date();
-  const timestamp = formatDate(currentDate);
-  await appendFile(logsFilePath, `${timestamp} ${message}\n`);
+  try {
+    const logEntry = new Log({ message });
+    await logEntry.save();
+    console.log('Log saved to MongoDB:', message);
+  } catch (error) {
+    console.error('Error saving log to MongoDB:', error);
+  }
 };
