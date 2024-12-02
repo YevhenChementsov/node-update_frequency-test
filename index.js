@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import http from 'http';
+import { scheduleJob } from 'node-schedule';
 import { mkdir } from 'node:fs/promises';
 
 import { connectToDB } from './db.js';
@@ -18,9 +19,6 @@ import {
 } from './helpers/index.js';
 
 const { saveData, startMonitor } = messages;
-
-//! Change interval below
-const INTERVAL = 1000 * 60 * 60; // 1 hour
 
 const monitorFile = async () => {
   await mkdir(downloadsFolderPath, { recursive: true });
@@ -51,13 +49,18 @@ const monitorFile = async () => {
 };
 
 const startUpdateDetection = async () => {
-  await connectToDB();
-  monitorFile();
   console.log(startMonitor);
-  setInterval(monitorFile, INTERVAL);
+  await monitorFile();
 };
 
-startUpdateDetection();
+(async () => {
+  await connectToDB();
+  await startUpdateDetection();
+})();
+
+scheduleJob('Start update detection', '0 * * * *', async () => {
+  await startUpdateDetection();
+});
 
 const { PORT = 3000 } = process.env;
 
@@ -68,9 +71,7 @@ http
     try {
       const logs = await Log.find();
       const formattedLogs = logs
-        .map(
-          ({ timestamp, message }) => `${formatDate(timestamp)} ${message}\n`,
-        )
+        .map(({ timestamp, message }) => `${formatDate(timestamp)} ${message}`)
         .join('\n');
       res.end(formattedLogs);
     } catch (error) {
