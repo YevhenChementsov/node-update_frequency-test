@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import mongoose from 'mongoose';
 
+import { messages } from '../helpers/index.js';
+
 const { DB_HOST } = process.env;
 
 mongoose.set('strictQuery', true);
@@ -8,9 +10,8 @@ mongoose.set('strictQuery', true);
 export const connectToDB = async () => {
   try {
     await mongoose.connect(DB_HOST);
-    console.log('Connected to MongoDB');
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+    console.error(messages.db.connect.error, error);
     process.exit(1);
   }
 };

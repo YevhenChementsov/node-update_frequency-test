@@ -6,5 +6,7 @@ export * from './formatDate.js';
 export * from './getMessage.js';
 export * from './getPath.js';
 export * from './loadPreviousData.js';
+export * from './monitorFile.js';
 export * from './saveCurrentData.js';
+export * from './startServer.js';
 export * from './writeLogMessage.js';

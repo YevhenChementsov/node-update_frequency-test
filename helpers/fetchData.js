@@ -1,12 +1,12 @@
 import axios from 'axios';
 
-import { calculateHash } from './index.js';
+import { calculateHash, messages } from './index.js';
 
 const URL = 'https://www.sec.gov/files/company_tickers_exchange.json';
 
 export const fetchData = async () => {
   try {
-    console.log('Fetching data...');
+    console.log(messages.data.fetch);
     const response = await axios.get(URL, {
       headers: { 'User-Agent': 'Company_Tickers_Update-Monitoring/1.0' },
       responseType: 'text',

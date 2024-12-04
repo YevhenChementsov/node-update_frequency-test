@@ -1,14 +1,11 @@
-import { messages } from './getMessage.js';
-import { saveCurrentData, writeLogMessage } from './index.js';
-
-const { noLocalData, startMonitor, saveData } = messages;
+import { messages, saveCurrentData, writeLogMessage } from './index.js';
 
 export const firstDownload = async (metadata, data) => {
-  console.log(noLocalData);
-  await writeLogMessage(startMonitor);
-  await writeLogMessage(noLocalData);
+  console.log(messages.data.noLocalData);
+  await writeLogMessage(messages.data.monitor);
+  await writeLogMessage(messages.data.noLocalData);
   await saveCurrentData(metadata, data);
-  console.log(saveData);
-  await writeLogMessage(saveData);
+  console.log(messages.data.update.success);
+  await writeLogMessage(messages.data.update.success);
   return;
 };
